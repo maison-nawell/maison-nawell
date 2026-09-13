@@ -1,195 +1,185 @@
-<title>Maison Nawell — Connexion</title>
+const loginForm = document.getElementById("login-form"); const resetButton = document.getElementById("reset-button");
+const newPasswordForm = document.getElementById("new-password-form");
+const emailInput = document.getElementById("email"); const passwordInput = document.getElementById("password");
+const newPasswordInput = document.getElementById("new-password"); const confirmPasswordInput = document.getElementById("confirm-password");
+const loginSection = document.getElementById("login-section"); const newPasswordSection = document.getElementById("new-password-section");
+const message = document.getElementById("message");
+// -------------------------------------------------- // CONNEXION // --------------------------------------------------
+loginForm.addEventListener("submit", async (event) => {
+event.preventDefault();
 
-<style>
-    * {
-        box-sizing: border-box;
+message.className = "";
+message.textContent = "Connexion...";
+
+const email = emailInput.value.trim();
+const password = passwordInput.value;
+
+try {
+
+    const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+    if (error) {
+        throw error;
     }
 
-    body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #f8f5f0;
-        font-family: Arial, sans-serif;
+    if (!data.session) {
+        throw new Error("Connexion impossible.");
     }
 
-    .login-box {
-        width: min(420px, 90%);
-        background: white;
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 10px 35px rgba(0,0,0,.10);
+    message.className = "success";
+    message.textContent = "Connexion réussie...";
+
+    window.location.href = "admin.html";
+
+} catch (error) {
+
+    console.error("Erreur connexion :", error);
+
+    message.className = "error";
+
+    message.textContent =
+        "Email ou mot de passe incorrect.";
+}
+});
+// -------------------------------------------------- // MOT DE PASSE OUBLIÉ // --------------------------------------------------
+resetButton.addEventListener("click", async () => {
+const email = emailInput.value.trim();
+
+if (!email) {
+
+    message.className = "error";
+    message.textContent =
+        "Entre ton adresse email.";
+
+    return;
+}
+
+message.className = "";
+message.textContent =
+    "Envoi du lien de récupération...";
+
+try {
+
+    /*
+     * Cette URL est automatiquement adaptée
+     * à ton site GitHub Pages.
+     */
+    const redirectTo =
+        new URL("admin-login.html", window.location.href).href;
+
+    const { error } =
+        await supabaseClient.auth.resetPasswordForEmail(
+            email,
+            {
+                redirectTo: redirectTo
+            }
+        );
+
+    if (error) {
+        throw error;
     }
 
-    h1 {
-        margin-top: 0;
-        text-align: center;
+    message.className = "success";
+
+    message.textContent =
+        "Un email de récupération a été envoyé. Vérifie ta boîte mail et tes spams.";
+
+} catch (error) {
+
+    console.error("Erreur récupération :", error);
+
+    message.className = "error";
+
+    message.textContent =
+        error.message ||
+        "Impossible d'envoyer le lien de récupération.";
+}
+});
+// -------------------------------------------------- // RETOUR APRÈS CLIC SUR LE LIEN DE RÉCUPÉRATION // --------------------------------------------------
+supabaseClient.auth.onAuthStateChange((event) => {
+console.log("Événement Auth :", event);
+
+if (event === "PASSWORD_RECOVERY") {
+
+    loginSection.classList.add("hidden");
+
+    newPasswordSection.classList.remove("hidden");
+
+    message.className = "success";
+
+    message.textContent =
+        "Choisis maintenant ton nouveau mot de passe.";
+}
+});
+// -------------------------------------------------- // ENREGISTRER LE NOUVEAU MOT DE PASSE // --------------------------------------------------
+newPasswordForm.addEventListener("submit", async (event) => {
+event.preventDefault();
+
+const newPassword = newPasswordInput.value;
+const confirmPassword = confirmPasswordInput.value;
+
+if (newPassword.length < 8) {
+
+    message.className = "error";
+
+    message.textContent =
+        "Le mot de passe doit contenir au moins 8 caractères.";
+
+    return;
+}
+
+if (newPassword !== confirmPassword) {
+
+    message.className = "error";
+
+    message.textContent =
+        "Les deux mots de passe ne correspondent pas.";
+
+    return;
+}
+
+message.className = "";
+
+message.textContent =
+    "Enregistrement du nouveau mot de passe...";
+
+try {
+
+    const { error } =
+await supabaseClient.auth.updateUser({
+            password: newPassword
+        });
+
+    if (error) {
+        throw error;
     }
 
-    .subtitle {
-        text-align: center;
-        margin-bottom: 30px;
-    }
+    message.className = "success";
 
-    label {
-        display: block;
-        margin: 18px 0 8px;
-    }
+    message.textContent =
+        "Mot de passe modifié ! Connexion...";
 
-    input {
-        width: 100%;
-        padding: 13px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 16px;
-    }
+    setTimeout(() => {
 
-    button {
-        width: 100%;
-        margin-top: 24px;
-        padding: 14px;
-        border: 0;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 15px;
-        font-weight: bold;
-    }
+        window.location.href = "admin.html";
 
-    .login-button {
-        background: #222;
-        color: white;
-    }
+    }, 1500);
 
-    .reset-button {
-        background: transparent;
-        color: #222;
-        text-decoration: underline;
-        margin-top: 12px;
-    }
+} catch (error) {
 
-    .hidden {
-        display: none;
-    }
+    console.error(
+        "Erreur changement mot de passe :",
+        error
+    );
 
-    #message {
-        margin-top: 18px;
-        text-align: center;
-        line-height: 1.5;
-    }
+    message.className = "error";
 
-    .success {
-        color: #287a3e;
-    }
-
-    .error {
-        color: #b42318;
-    }
-</style>
-<main class="login-box">
-
-    <h1>Maison Nawell</h1>
-
-    <p class="subtitle">Espace gérante</p>
-
-    <!-- CONNEXION -->
-    <section id="login-section">
-
-        <form id="login-form">
-
-            <label for="email">Email</label>
-
-            <input
-                type="email"
-                id="email"
-                value="maisonnawell776@gmail.com"
-                required
-                autocomplete="email"
-            >
-
-            <label for="password">Mot de passe</label>
-
-            <input
-                type="password"
-                id="password"
-                required
-                autocomplete="current-password"
-            >
-
-            <button
-                type="submit"
-                class="login-button"
-            >
-                SE CONNECTER
-            </button>
-
-        </form>
-
-        <button
-            type="button"
-            id="reset-button"
-            class="reset-button"
-        >
-            MOT DE PASSE OUBLIÉ ?
-        </button>
-
-    </section>
-
-
-    <!-- NOUVEAU MOT DE PASSE -->
-    <section id="new-password-section" class="hidden">
-
-        <h2 style="text-align:center;">
-            Nouveau mot de passe
-        </h2>
-
-        <form id="new-password-form">
-
-            <label for="new-password">
-                Nouveau mot de passe
-            </label>
-
-            <input
-                type="password"
-                id="new-password"
-                minlength="8"
-                required
-                autocomplete="new-password"
-            >
-
-            <label for="confirm-password">
-                Confirmer le mot de passe
-            </label>
-
-            <input
-                type="password"
-                id="confirm-password"
-                minlength="8"
-                required
-                autocomplete="new-password"
-            >
-
-            <button
-                type="submit"
-                class="login-button"
-            >
-                ENREGISTRER LE NOUVEAU MOT DE PASSE
-            </button>
-
-        </form>
-
-    </section>
-
-
-    <p id="message"></p>
-
-</main>
-
-
-<!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="supabase-config.js"></script>
-
-<script src="admin-login.js"></script>
+    message.textContent =
+        error.message ||
+        "Impossible de modifier le mot de passe.";
+}
+});
