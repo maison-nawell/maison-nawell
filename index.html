@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maison Nawell | Onglerie</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+<a href="#accueil" class="logo">
+    <img src="images/logo.png" alt="Maison Nawell">
+</a>
+
+<nav>
+    <a href="#accueil">Accueil</a>
+    <a href="#prestations">Prestations</a>
+    <a href="#galerie">Galerie</a>
+    <a href="#tarifs">Tarifs</a>
+    <a href="#rendez-vous">Rendez-vous</a>
+    <a href="#contact">Contact</a>
+</nav>
+</header>
+<section id="accueil" class="hero">
+<div class="hero-overlay"></div>
+
+<div class="hero-content">
+
+    <p class="small-title">ONGLERIE • BEAUTÉ • NAIL ART</p>
+
+    <h1>MAISON<br>NAWELL</h1>
+
+    <div class="hero-line"></div>
+
+    <p class="hero-subtitle">
+        Des ongles qui te ressemblent.
+    </p>
+
+    <a href="#rendez-vous" class="button">
+        PRENDRE RENDEZ-VOUS
+    </a>
+
+</div>
+</section>
+<section class="presentation">
+<p class="small-title">BIENVENUE</p>
+
+<h2>
+    Votre beauté,<br>
+    notre passion
+</h2>
+
+<div class="gold-line"></div>
+
+<p>
+    Bienvenue chez <strong>Maison Nawell</strong>, votre espace
+    dédié à la beauté des ongles à Jeanmenil.
+</p>
+
+<p>
+    Découvrez un moment de beauté et de détente pensé
+    pour révéler votre style.
+</p>
+</section>
+<section id="prestations" class="section">
+<p class="small-title">NOS SERVICES</p>
+
+<h2>Prestations</h2>
+
+<div class="gold-line"></div>
+
+<div class="cards">
+
+    <div class="card">
+        <div class="icon">✦</div>
+
+        <h3>Pose complète</h3>
+
+        <p>
+            Sublimez vos mains avec une pose élégante
+            adaptée à votre style.
+        </p>
+    </div>
+
+
+    <div class="card">
+        <div class="icon">♡</div>
+
+        <h3>Manucure russe</h3>
+
+        <p>
+            Des cuticules parfaites pour un résultat
+            impeccable.
+        </p>
+    </div>
+
+
+    <div class="card">
+        <div class="icon">✧</div>
+
+        <h3>Gainage sur ongle naturel</h3>
+
+        <p>
+            Des ongles forts, beaux et élégants.
+        </p>
+    </div>
+
+</div>
+</section>
+<section id="galerie" class="section galerie">
+<p class="small-title">NOS CRÉATIONS</p>
+
+<h2>Galerie</h2>
+
+<div class="gold-line"></div>
+
+<p class="gallery-text">
+    Découvrez nos réalisations.
+</p>
+
+<div class="photo-grid">
+
+    <div class="photo">
+        <span>PHOTO 1</span>
+    </div>
+
+    <div class="photo">
+        <span>PHOTO 2</span>
+    </div>
+
+    <div class="photo">
+        <span>PHOTO 3</span>
+    </div>
+
+</div>
+</section>
+<section id="tarifs" class="section tarifs">
+<p class="small-title">NOS PRIX</p>
+
+<h2>Tarifs</h2>
+
+<div class="gold-line"></div>
+
+<div class="prices">
+
+    <div class="price">
+        <span>Pose complète</span>
+        <strong>Sur devis</strong>
+    </div>
+
+    <div class="price">
+        <span>Manucure russe</span>
+        <strong>Sur devis</strong>
+    </div>
+
+    <div class="price">
+        <span>Gainage sur ongle naturel</span>
+        <strong>Sur devis</strong>
+    </div>
+
+</div>
+
+<p class="note">
+    Les tarifs peuvent être personnalisés selon
+    la prestation demandée.
+</p>
+</section>
+<!-- ==============================
+     RÉSERVATION
+     ============================== -->
+<section id="rendez-vous" class="section rendez-vous">
+<p class="small-title">RÉSERVATION</p>
+
+<h2>Prendre rendez-vous</h2>
+
+<div class="gold-line"></div>
+
+<p class="rdv-description">
+    Choisissez votre prestation, votre date et votre créneau.
+</p>
+
+
+<div class="rdv-form">
+
+    <div class="rdv-field">
+
+        <label for="prestation">
+            Prestation
+        </label>
+
+        <select id="prestation">
+
+            <option value="">
+                -- Choisir une prestation --
+            </option>
+
+            <option value="1">
+                Pose complète — 2h
+            </option>
+
+            <option value="2">
+                Manucure russe — 1h
+            </option>
+
+            <option value="3">
+                Gainage sur ongle naturel — 1h30
+            </option>
+   </select>
+
+    </div>
+
+
+    <div class="rdv-field">
+
+        <label for="date-rdv">
+            Date
+        </label>
+
+        <input
+            type="date"
+            id="date-rdv"
+        >
+
+    </div>
+
+
+    <div class="rdv-field">
+
+        <label for="nom-rdv">
+            Nom et prénom
+        </label>
+
+        <input
+            type="text"
+            id="nom-rdv"
+            placeholder="Votre nom et prénom"
+            autocomplete="name"
+        >
+
+    </div>
+
+
+    <div class="rdv-field">
+
+        <label for="telephone-rdv">
+            Téléphone
+        </label>
+
+        <input
+            type="tel"
+            id="telephone-rdv"
+            placeholder="06 00 00 00 00"
+            autocomplete="tel"
+        >
+
+    </div>
+
+</div>
+
+
+<div class="rdv-table-container">
+
+    <table class="rdv-table">
+
+        <thead>
+
+            <tr>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Disponibilité</th>
+                <th>Réserver</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="creneaux">
+
+            <tr>
+
+                <td colspan="4">
+                    Choisissez une prestation et une date.
+                </td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+<div id="recap-rdv" class="recap-rdv">
+
+    <h3>Votre rendez-vous</h3>
+
+    <p>
+        <strong>Prestation :</strong>
+        <span id="recap-prestation">—</span>
+    </p>
+
+    <p>
+        <strong>Date :</strong>
+        <span id="recap-date">—</span>
+    </p>
+
+    <p>
+        <strong>Horaire :</strong>
+        <span id="recap-heure">—</span>
+    </p>
+
+
+    <button
+        type="button"
+        id="confirmer-rdv"
+        class="button"
+    >
+        CONFIRMER LE RENDEZ-VOUS
+    </button>
+
+    <p id="message-rdv"></p>
+
+</div>
+</section>
+<section id="contact" class="contact">
+<p class="small-title">CONTACT</p>
+
+<h2>Nous contacter</h2>
+
+<div class="gold-line"></div>
+
+<p class="contact-text">
+    Une question ? Contactez Maison Nawell.
+</p>
+
+<p class="location">
+    📍 Jeanmenil
+</p>
+
+<a href="tel:0662949432" class="button">
+    📞 06 62 94 94 32
+</a>
+
+<a
+    href="https://www.instagram.com/maisonnwl/"
+    class="button instagram-button"
+    target="_blank"
+    rel="noopener noreferrer"
+>
+    📷 Instagram
+</a>
+
+<p class="whatsapp">
+    📱 Réservation en ligne ou sur WhatsApp.
+</p>
+</section>
+<footer>
+<div class="logo">
+    MAISON NAWELL
+</div>
+
+<p>
+    © 2026 Maison Nawell — Tous droits réservés.
+</p>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

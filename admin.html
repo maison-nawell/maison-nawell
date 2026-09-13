@@ -1,0 +1,89 @@
+<title>Maison Nawell — Administration</title>
+
+<link rel="stylesheet" href="admin.css">
+<header class="admin-header">
+    <div>
+        <h1>Maison Nawell</h1>
+        <p>Espace gérante</p>
+    </div>
+
+    <button id="deconnexion" type="button">
+        DÉCONNEXION
+    </button>
+</header>
+
+<main class="admin-container">
+
+    <section class="admin-welcome">
+        <h2>Tableau de bord</h2>
+        <p id="admin-email"></p>
+    </section>
+
+    <section class="admin-cards">
+
+        <article class="admin-card">
+            <span>📅</span>
+            <h3>Réservations</h3>
+            <strong id="nombre-reservations">—</strong>
+            <p>Rendez-vous enregistrés</p>
+        </article>
+
+        <article class="admin-card">
+            <span>💅</span>
+            <h3>Prestations</h3>
+            <strong id="nombre-prestations">—</strong>
+            <p>Prestations actives</p>
+        </article>
+
+    </section>
+
+    <section class="admin-section">
+
+        <div class="section-title">
+            <h2>Réservations</h2>
+
+            <button
+                id="actualiser-reservations"
+                type="button"
+            >
+                ACTUALISER
+            </button>
+        </div>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Heure</th>
+                        <th>Cliente</th>
+                        <th>Téléphone</th>
+                        <th>Prestation</th>
+                        <th>Statut</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="reservations">
+
+                    <tr>
+                        <td colspan="7">
+                            Chargement...
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="admin.js"></script>

@@ -1,0 +1,784 @@
+/* =========================================
+   MAISON NAWELL
+   Rose • Corail • Orange • Blanc
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Georgia, "Times New Roman", serif;
+    color: white;
+    line-height: 1.6;
+
+    background:
+        linear-gradient(
+            135deg,
+            #d96b91 0%,
+            #e87887 25%,
+            #f18a7b 50%,
+            #f59b6c 75%,
+            #f6a15f 100%
+        );
+
+    background-attachment: fixed;
+}
+
+
+/* =========================================
+   MENU
+========================================= */
+
+header { position: fixed; top: 0; left: 0;
+width: 100%;
+min-height: 85px;
+
+padding: 12px 7%;
+
+display: flex;
+justify-content: space-between;
+align-items: center;
+
+background: rgba(255, 255, 255, 0.12);
+
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+
+border-bottom: 1px solid rgba(255, 255, 255, 0.30);
+
+z-index: 1000;
+}
+.logo img {
+    width: 110px;
+    height: auto;
+    display: block;
+}
+nav {
+    display: flex;
+    gap: 28px;
+}
+
+nav a {
+    text-decoration: none;
+
+    color: white;
+
+    font-size: 14px;
+    letter-spacing: 1px;
+
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #ffe8ed;
+}
+
+
+/* =========================================
+   ACCUEIL
+========================================= */
+
+.hero { min-height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+
+text-align: center;
+
+padding: 150px 20px 80px;
+
+position: relative;
+overflow: hidden;
+}
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(255, 255, 255, 0.18),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 80% 80%,
+            rgba(255, 255, 255, 0.14),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #d96b91,
+            #e87887,
+            #f18a7b,
+            #f59b6c,
+            #f6a15f
+        );
+}
+
+.hero-content {
+    max-width: 800px;
+
+    position: relative;
+    z-index: 2;
+}
+
+.hero .small-title {
+    color: white;
+
+    letter-spacing: 4px;
+    font-size: 13px;
+
+    margin-bottom: 20px;
+}
+
+.hero h1 {
+    font-size: clamp(60px, 10vw, 120px);
+
+    line-height: 0.9;
+
+    letter-spacing: 8px;
+
+    color: white;
+
+    margin-bottom: 25px;
+
+    text-shadow:
+        0 5px 25px rgba(90, 30, 50, 0.18);
+}
+
+.hero p:not(.small-title) {
+    font-size: 22px;
+
+    font-style: italic;
+
+    color: white;
+
+    margin-bottom: 40px;
+}
+
+.hero-line {
+    width: 70px;
+    height: 1px;
+
+    background: rgba(255, 255, 255, 0.8);
+
+    margin: 0 auto 25px;
+}
+
+
+/* =========================================
+   BOUTONS
+========================================= */
+
+.button {
+    display: inline-block;
+
+    padding: 15px 30px;
+
+    background: white;
+
+    color: #d96b91;
+
+    text-decoration: none;
+
+    letter-spacing: 1px;
+
+    font-size: 13px;
+
+    border: 1px solid white;
+
+    transition: 0.3s;
+
+    border-radius: 2px;
+}
+
+.button:hover {
+    background: transparent;
+
+    color: white;
+
+    border-color: white;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================
+   PETITS TITRES
+========================================= */
+
+.small-title {
+    color: white;
+
+    letter-spacing: 4px;
+
+    font-size: 13px;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================
+   PRESENTATION
+========================================= */
+
+.presentation {
+    text-align: center;
+
+    max-width: 750px;
+
+    margin: auto;
+
+    padding: 110px 25px;
+}
+
+.presentation h2,
+.section h2,
+.contact h2 {
+    font-size: 42px;
+
+    font-weight: normal;
+
+    margin-bottom: 25px;
+
+    color: white;
+}
+
+.presentation p:not(.small-title) {
+    margin-bottom: 12px;
+
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.presentation strong {
+    color: white;
+}
+
+
+/* =========================================
+   LIGNE DÉCORATIVE
+========================================= */
+
+.gold-line {
+    width: 55px;
+
+    height: 1px;
+
+    background: rgba(255, 255, 255, 0.8);
+margin: 0 auto 35px;
+}
+
+
+/* =========================================
+   SECTIONS
+========================================= */
+
+.section {
+    padding: 100px 7%;
+
+    text-align: center;
+
+    position: relative;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(217, 107, 145, 0.96),
+            rgba(232, 120, 135, 0.96),
+            rgba(241, 138, 123, 0.96),
+            rgba(245, 155, 108, 0.96)
+        );
+}
+
+
+/* =========================================
+   CARTES PRESTATIONS
+========================================= */
+
+.cards {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 25px;
+
+    max-width: 1100px;
+
+    margin: 50px auto 0;
+}
+
+.card {
+    padding: 45px 30px;
+
+    background: rgba(255, 255, 255, 0.13);
+
+    border: 1px solid rgba(255, 255, 255, 0.38);
+
+    border-radius: 8px;
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+
+    background: rgba(255, 255, 255, 0.20);
+
+    box-shadow:
+        0 15px 40px rgba(90, 30, 50, 0.15);
+}
+
+.icon {
+    font-size: 30px;
+
+    color: white;
+
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    font-size: 23px;
+
+    font-weight: normal;
+
+    margin-bottom: 15px;
+
+    color: white;
+}
+
+.card p {
+    color: rgba(255, 255, 255, 0.90);
+
+    font-size: 15px;
+}
+
+
+/* =========================================
+   GALERIE
+========================================= */
+
+.galerie {
+    background:
+        linear-gradient(
+            135deg,
+            #e87887,
+            #f18a7b,
+            #f59b6c,
+            #f6a15f
+        );
+}
+
+.gallery-text {
+    color: rgba(255, 255, 255, 0.90);
+
+    margin-bottom: 35px;
+}
+
+.photo-grid {
+    max-width: 1100px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+.photo {
+    height: 320px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background: rgba(255, 255, 255, 0.14);
+
+    border: 1px solid rgba(255, 255, 255, 0.38);
+
+    border-radius: 8px;
+
+    color: white;
+
+    letter-spacing: 2px;
+
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+
+    overflow: hidden;
+
+    transition: 0.3s;
+}
+
+.photo:hover {
+    transform: scale(1.02);
+
+    background: rgba(255, 255, 255, 0.20);
+}
+
+
+/* =========================================
+   TARIFS
+========================================= */
+
+.tarifs {
+    background:
+        linear-gradient(
+            135deg,
+            #d96b91,
+            #e87887,
+            #f18a7b,
+            #f59b6c
+        );
+}
+
+.prices {
+    max-width: 700px;
+
+    margin: 45px auto 20px;
+}
+
+.price {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 22px 10px;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.40);
+
+    font-size: 18px;
+
+    color: white;
+}
+
+.price strong {
+    color: white;
+
+    font-weight: normal;
+}
+
+.note {
+    color: rgba(255, 255, 255, 0.85);
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   CONTACT
+========================================= */
+
+.contact {
+    text-align: center;
+
+    padding: 110px 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #d96b91,
+            #e87887,
+            #f18a7b,
+            #f59b6c,
+            #f6a15f
+        );
+}
+
+.contact h2 {
+    color: white;
+}
+
+.contact-text {
+    color: rgba(255, 255, 255, 0.92);
+
+    margin-bottom: 25px;
+}
+
+.contact > p:not(.small-title) {
+    margin-bottom: 18px;
+}
+
+.location {
+    font-size: 18px;
+
+    color: white;
+}
+
+.whatsapp {
+    margin-top: 25px;
+
+    font-size: 14px;
+
+    color: white;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+footer {
+    text-align: center;
+
+    padding: 45px 20px;
+
+    background: rgba(70, 30, 40, 0.88);
+
+    color: white;
+}
+
+footer .logo {
+    margin-bottom: 15px;
+color: white;
+}
+
+footer p {
+    font-size: 13px;
+
+    color: rgba(255, 255, 255, 0.75);
+}
+/* =========================================
+   VERSION MOBILE
+========================================= */
+
+@media (max-width: 800px) {
+
+    header {
+        padding: 18px 20px;
+
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+    .logo {
+        font-size: 18px;
+
+        letter-spacing: 3px;
+    }
+
+    nav {
+        gap: 12px;
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+    }
+
+    nav a {
+        font-size: 11px;
+    }
+
+    .hero {
+        padding-top: 150px;
+    }
+
+    .hero h1 {
+        font-size: 60px;
+
+        letter-spacing: 4px;
+    }
+
+    .hero p:not(.small-title) {
+        font-size: 18px;
+    }
+
+    .presentation h2,
+    .section h2,
+    .contact h2 {
+        font-size: 34px;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .photo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .photo {
+        height: 280px;
+    }
+
+    .section {
+        padding: 80px 20px;
+    }
+
+    .presentation {
+        padding: 80px 20px;
+    }
+
+    .contact {
+        padding: 80px 20px;
+    }
+
+    .price {
+        font-size: 16px;
+    }
+}
+/* ==============================
+RÉSERVATION
+============================== */
+.rendez-vous {
+background: linear-gradient(
+135deg,
+#d96b91,
+#e87887,
+#f18a7b,
+#f59b6c
+);
+}
+.rdv-description {
+margin-bottom: 35px;
+color: rgba(255, 255, 255, 0.9);
+}
+.rdv-form {
+max-width: 650px;
+margin: 0 auto 45px;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+text-align: left;
+}
+.rdv-field {
+display: flex;
+flex-direction: column;
+}
+.rdv-field label {
+margin-bottom: 8px;
+font-size: 14px;
+letter-spacing: 1px;
+}
+.rdv-form select,
+.rdv-form input {
+width: 100%;
+padding: 14px;
+border: 1px solid rgba(255, 255, 255, 0.5);
+border-radius: 5px;
+font-family: Georgia, “Times New Roman”, serif;
+font-size: 15px;
+outline: none;
+}
+.rdv-form select {
+background: white;
+color: #333;
+}
+.rdv-form input {
+background: rgba(255, 255, 255, 0.15);
+color: white;
+}
+.rdv-form input::placeholder {
+color: rgba(255, 255, 255, 0.75);
+}
+.rdv-form input::-webkit-calendar-picker-indicator {
+filter: invert(1);
+}
+.rdv-table-container {
+max-width: 900px;
+margin: auto;
+overflow-x: auto;
+}
+.rdv-table {
+width: 100%;
+border-collapse: collapse;
+background: rgba(255, 255, 255, 0.12);
+border: 1px solid rgba(255, 255, 255, 0.35);
+border-radius: 8px;
+overflow: hidden;
+}
+.rdv-table th,
+.rdv-table td {
+padding: 18px 15px;
+border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+text-align: center;
+}
+.rdv-table th {
+font-size: 14px;
+letter-spacing: 1px;
+background: rgba(255, 255, 255, 0.12);
+}
+.rdv-table td {
+font-size: 15px;
+}
+.disponible {
+color: white;
+font-weight: bold;
+}
+.indisponible {
+color: rgba(255, 255, 255, 0.55);
+}
+.btn-reserver {
+border: none;
+padding: 9px 18px;
+border-radius: 3px;
+background: white;
+color: #d96b91;
+cursor: pointer;
+font-family: Georgia, “Times New Roman”, serif;
+transition: 0.3s;
+}
+.btn-reserver:hover {
+transform: translateY(-2px);
+background: #ffe8ed;
+}
+.btn-reserver:disabled {
+background: rgba(255, 255, 255, 0.25);
+color: rgba(255, 255, 255, 0.5);
+cursor: not-allowed;
+transform: none;
+}
+.recap-rdv {
+display: none;
+max-width: 650px;
+margin: 40px auto 0;
+padding: 30px;
+background: rgba(255, 255, 255, 0.15);
+border: 1px solid rgba(255, 255, 255, 0.35);
+border-radius: 8px;
+text-align: center;
+}
+.recap-rdv.active {
+display: block;
+}
+.recap-rdv h3 {
+font-size: 24px;
+font-weight: normal;
+margin-bottom: 20px;
+}
+.recap-rdv p {
+margin-bottom: 8px;
+}
+#message-rdv {
+margin-top: 20px;
+}
+/* MOBILE */
+@media (max-width: 800px) {
+.rdv-form {
+    grid-template-columns: 1fr;
+}
+
+.rdv-table th,
+.rdv-table td {
+    padding: 12px 8px;
+    font-size: 13px;
+}
+
+.btn-reserver {
+    padding: 8px 10px;
+    font-size: 12px;
+}
+}

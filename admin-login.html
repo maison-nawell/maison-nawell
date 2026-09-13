@@ -1,0 +1,105 @@
+<title>Maison Nawell — Connexion</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f5f0;
+        font-family: Arial, sans-serif;
+    }
+
+    .login-box {
+        width: min(420px, 90%);
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 35px rgba(0,0,0,.10);
+    }
+
+    h1 {
+        margin-top: 0;
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        margin: 18px 0 8px;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 24px;
+        padding: 14px;
+        border: 0;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    #message {
+        margin-top: 18px;
+        text-align: center;
+    }
+</style>
+<main class="login-box">
+
+    <h1>Maison Nawell</h1>
+
+    <p style="text-align:center;">
+        Espace gérante
+    </p>
+
+    <form id="login-form">
+
+        <label for="email">
+            Email
+        </label>
+
+        <input
+            type="email"
+            id="email"
+            value="maisonnawell776@gmail.com"
+            required
+            autocomplete="email"
+        >
+
+        <label for="password">
+            Mot de passe
+        </label>
+
+        <input
+            type="password"
+            id="password"
+            required
+            autocomplete="current-password"
+        >
+
+        <button type="submit">
+            SE CONNECTER
+        </button>
+
+    </form>
+
+    <p id="message"></p>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="admin-login.js"></script>
