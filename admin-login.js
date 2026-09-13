@@ -1,35 +1,195 @@
-const form = document.getElementById("login-form"); const email = document.getElementById("email"); const password = document.getElementById("password"); const message = document.getElementById("message");
-form.addEventListener("submit", async (event) => {
-event.preventDefault();
+<title>Maison Nawell — Connexion</title>
 
-message.textContent = "Connexion...";
-
-try {
-
-    const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-            email: email.value.trim(),
-            password: password.value
-        });
-
-    if (error) {
-        throw error;
+<style>
+    * {
+        box-sizing: border-box;
     }
 
-    if (!data.session) {
-        throw new Error(
-            "Connexion impossible."
-        );
+    body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f5f0;
+        font-family: Arial, sans-serif;
     }
 
-    window.location.href = "admin.html";
+    .login-box {
+        width: min(420px, 90%);
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 10px 35px rgba(0,0,0,.10);
+    }
 
-} catch (error) {
+    h1 {
+        margin-top: 0;
+        text-align: center;
+    }
 
-    console.error("Erreur connexion :", error);
+    .subtitle {
+        text-align: center;
+        margin-bottom: 30px;
+    }
 
-    message.textContent =
-        error.message ||
-        "Email ou mot de passe incorrect.";
-}
-});
+    label {
+        display: block;
+        margin: 18px 0 8px;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        margin-top: 24px;
+        padding: 14px;
+        border: 0;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    .login-button {
+        background: #222;
+        color: white;
+    }
+
+    .reset-button {
+        background: transparent;
+        color: #222;
+        text-decoration: underline;
+        margin-top: 12px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #message {
+        margin-top: 18px;
+        text-align: center;
+        line-height: 1.5;
+    }
+
+    .success {
+        color: #287a3e;
+    }
+
+    .error {
+        color: #b42318;
+    }
+</style>
+<main class="login-box">
+
+    <h1>Maison Nawell</h1>
+
+    <p class="subtitle">Espace gérante</p>
+
+    <!-- CONNEXION -->
+    <section id="login-section">
+
+        <form id="login-form">
+
+            <label for="email">Email</label>
+
+            <input
+                type="email"
+                id="email"
+                value="maisonnawell776@gmail.com"
+                required
+                autocomplete="email"
+            >
+
+            <label for="password">Mot de passe</label>
+
+            <input
+                type="password"
+                id="password"
+                required
+                autocomplete="current-password"
+            >
+
+            <button
+                type="submit"
+                class="login-button"
+            >
+                SE CONNECTER
+            </button>
+
+        </form>
+
+        <button
+            type="button"
+            id="reset-button"
+            class="reset-button"
+        >
+            MOT DE PASSE OUBLIÉ ?
+        </button>
+
+    </section>
+
+
+    <!-- NOUVEAU MOT DE PASSE -->
+    <section id="new-password-section" class="hidden">
+
+        <h2 style="text-align:center;">
+            Nouveau mot de passe
+        </h2>
+
+        <form id="new-password-form">
+
+            <label for="new-password">
+                Nouveau mot de passe
+            </label>
+
+            <input
+                type="password"
+                id="new-password"
+                minlength="8"
+                required
+                autocomplete="new-password"
+            >
+
+            <label for="confirm-password">
+                Confirmer le mot de passe
+            </label>
+
+            <input
+                type="password"
+                id="confirm-password"
+                minlength="8"
+                required
+                autocomplete="new-password"
+            >
+
+            <button
+                type="submit"
+                class="login-button"
+            >
+                ENREGISTRER LE NOUVEAU MOT DE PASSE
+            </button>
+
+        </form>
+
+    </section>
+
+
+    <p id="message"></p>
+
+</main>
+
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+<script src="admin-login.js"></script>
