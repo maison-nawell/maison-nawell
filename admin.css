@@ -1,0 +1,58 @@
+{ box-sizing: border-box; }
+body { margin: 0; background: #f8f5f0; color: #222; font-family: Arial, sans-serif; }
+.admin-header { background: #fff; padding: 25px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5dfd7; }
+.admin-header h1 { margin: 0; }
+.admin-header p { margin: 5px 0 0; color: #777; }
+.admin-header button, .section-title button, .form-buttons button, .btn-annuler, .btn-modifier, .btn-supprimer { border: 0; padding: 11px 16px; cursor: pointer; font-weight: bold; }
+.admin-header button { background: #222; color: #fff; }
+.admin-container { width: min(1200px, 94%); margin: 40px auto; }
+.admin-welcome { margin-bottom: 30px; }
+.admin-welcome h2 { margin-bottom: 5px; }
+.admin-welcome p { color: #777; }
+.admin-section { background: #fff; padding: 30px; margin-bottom: 30px; border: 1px solid #e8e1d9; }
+.section-title { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 25px; }
+.section-title h2 { margin: 0 0 5px; }
+.section-title p { margin: 0; color: #777; }
+.section-title button { background: #222; color: white; }
+.table-container { width: 100%; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 14px 10px; text-align: left; border-bottom: 1px solid #eee; white-space: nowrap; }
+th { font-size: 13px; text-transform: uppercase; }
+.statut { font-size: 12px; font-weight: bold; }
+.btn-annuler { background: #b33a3a; color: white; }
+.formulaire-prestation { background: #f8f5f0; padding: 25px; margin-bottom: 30px; }
+.formulaire-prestation h3 { margin-top: 0; }
+.formulaire-prestation label { display: block; margin: 16px 0 7px; font-weight: bold; }
+.formulaire-prestation input, .formulaire-prestation textarea { width: 100%; padding: 12px; border: 1px solid #ccc; background: white; font-size: 15px; }
+.formulaire-prestation textarea { min-height: 100px; resize: vertical; }
+.photo-info { font-size: 13px; color: #777; }
+.form-buttons { display: flex; gap: 10px; margin-top: 20px; }
+.form-buttons button:first-child { background: #ddd; }
+.form-buttons button:last-child { background: #222; color: white; }
+#message-prestation { margin-top: 15px; font-weight: bold; }
+.liste-prestations { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.prestation-admin { border: 1px solid #e5dfd7; background: white; }
+.prestation-admin img { width: 100%; height: 220px; object-fit: cover; display: block; }
+.prestation-admin-content { padding: 18px; }
+.prestation-admin h3 { margin-top: 0; }
+.prestation-admin p { color: #666; }
+.prestation-prix { font-weight: bold; }
+.prestation-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+.btn-modifier { background: #222; color: white; }
+.btn-supprimer { background: #b33a3a; color: white; }
+.btn-activer { background: #777; color: white; }
+@media (max-width: 700px) {
+.admin-header {
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.section-title {
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.admin-section {
+    padding: 20px;
+}
+}
