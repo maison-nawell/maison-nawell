@@ -28,6 +28,11 @@
         text-align: center;
     }
 
+    .subtitle {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
     label {
         display: block;
         margin: 18px 0 8px;
@@ -52,54 +57,139 @@
         font-weight: bold;
     }
 
+    .login-button {
+        background: #222;
+        color: white;
+    }
+
+    .reset-button {
+        background: transparent;
+        color: #222;
+        text-decoration: underline;
+        margin-top: 12px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
     #message {
         margin-top: 18px;
         text-align: center;
+        line-height: 1.5;
+    }
+
+    .success {
+        color: #287a3e;
+    }
+
+    .error {
+        color: #b42318;
     }
 </style>
 <main class="login-box">
 
     <h1>Maison Nawell</h1>
 
-    <p style="text-align:center;">
-        Espace gérante
-    </p>
+    <p class="subtitle">Espace gérante</p>
 
-    <form id="login-form">
+    <!-- CONNEXION -->
+    <section id="login-section">
 
-        <label for="email">
-            Email
-        </label>
+        <form id="login-form">
 
-        <input
-            type="email"
-            id="email"
-            value="maisonnawell776@gmail.com"
-            required
-            autocomplete="email"
+            <label for="email">Email</label>
+
+            <input
+                type="email"
+                id="email"
+                value="maisonnawell776@gmail.com"
+                required
+                autocomplete="email"
+            >
+
+            <label for="password">Mot de passe</label>
+
+            <input
+                type="password"
+                id="password"
+                required
+                autocomplete="current-password"
+            >
+
+            <button
+                type="submit"
+                class="login-button"
+            >
+                SE CONNECTER
+            </button>
+
+        </form>
+
+        <button
+            type="button"
+            id="reset-button"
+            class="reset-button"
         >
-
-        <label for="password">
-            Mot de passe
-        </label>
-
-        <input
-            type="password"
-            id="password"
-            required
-            autocomplete="current-password"
-        >
-
-        <button type="submit">
-            SE CONNECTER
+            MOT DE PASSE OUBLIÉ ?
         </button>
 
-    </form>
+    </section>
+
+
+    <!-- NOUVEAU MOT DE PASSE -->
+    <section id="new-password-section" class="hidden">
+
+        <h2 style="text-align:center;">
+            Nouveau mot de passe
+        </h2>
+
+        <form id="new-password-form">
+
+            <label for="new-password">
+                Nouveau mot de passe
+            </label>
+
+            <input
+                type="password"
+                id="new-password"
+                minlength="8"
+                required
+                autocomplete="new-password"
+            >
+
+            <label for="confirm-password">
+                Confirmer le mot de passe
+            </label>
+
+            <input
+                type="password"
+                id="confirm-password"
+                minlength="8"
+                required
+                autocomplete="new-password"
+            >
+
+            <button
+                type="submit"
+                class="login-button"
+            >
+                ENREGISTRER LE NOUVEAU MOT DE PASSE
+            </button>
+
+        </form>
+
+    </section>
+
 
     <p id="message"></p>
 
 </main>
 
+
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase-config.js"></script>
+
 <script src="admin-login.js"></script>
