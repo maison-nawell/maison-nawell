@@ -1,89 +1,188 @@
-<title>Maison Nawell — Administration</title>
+<button id="deconnexion" type="button">
+    DÉCONNEXION
+</button>
+<section class="admin-welcome">
+    <h2>Tableau de bord</h2>
+    <p id="admin-email"></p>
+</section>
 
-<link rel="stylesheet" href="admin.css">
-<header class="admin-header">
-    <div>
-        <h1>Maison Nawell</h1>
-        <p>Espace gérante</p>
+<!-- RENDEZ-VOUS -->
+
+<section class="admin-section">
+
+    <div class="section-title">
+        <div>
+            <h2>Rendez-vous</h2>
+            <p>Les réservations des clientes</p>
+        </div>
+
+        <button
+            id="actualiser-reservations"
+            type="button"
+        >
+            ACTUALISER
+        </button>
     </div>
 
-    <button id="deconnexion" type="button">
-        DÉCONNEXION
-    </button>
-</header>
+    <div class="table-container">
 
-<main class="admin-container">
+        <table>
 
-    <section class="admin-welcome">
-        <h2>Tableau de bord</h2>
-        <p id="admin-email"></p>
-    </section>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Horaire</th>
+                    <th>Cliente</th>
+                    <th>Téléphone</th>
+                    <th>Prestation</th>
+                    <th>Statut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
 
-    <section class="admin-cards">
+            <tbody id="reservations">
+                <tr>
+                    <td colspan="7">
+                        Chargement...
+                    </td>
+                </tr>
+            </tbody>
 
-        <article class="admin-card">
-            <span>📅</span>
-            <h3>Réservations</h3>
-            <strong id="nombre-reservations">—</strong>
-            <p>Rendez-vous enregistrés</p>
-        </article>
+        </table>
 
-        <article class="admin-card">
-            <span>💅</span>
-            <h3>Prestations</h3>
-            <strong id="nombre-prestations">—</strong>
-            <p>Prestations actives</p>
-        </article>
+    </div>
 
-    </section>
+</section>
 
-    <section class="admin-section">
 
-        <div class="section-title">
-            <h2>Réservations</h2>
+<!-- PRESTATIONS -->
+
+<section class="admin-section">
+
+    <div class="section-title">
+        <div>
+            <h2>Prestations</h2>
+            <p>Gérer les prestations affichées sur le site</p>
+        </div>
+
+        <button
+            id="nouvelle-prestation"
+            type="button"
+        >
+            + AJOUTER UNE PRESTATION
+        </button>
+    </div>
+
+
+    <!-- FORMULAIRE -->
+
+    <div
+        id="formulaire-prestation"
+        class="formulaire-prestation"
+        hidden
+    >
+
+        <h3 id="titre-formulaire">
+            Ajouter une prestation
+        </h3>
+
+        <input
+            type="hidden"
+            id="prestation-id"
+        >
+
+        <label for="prestation-nom">
+            Nom de la prestation
+        </label>
+
+        <input
+            type="text"
+            id="prestation-nom"
+            placeholder="Ex : Pose complète"
+        >
+
+
+        <label for="prestation-description">
+            Description
+        </label>
+
+        <textarea
+            id="prestation-description"
+            placeholder="Description de la prestation"
+        ></textarea>
+
+
+        <label for="prestation-duree">
+            Durée en minutes
+        </label>
+
+        <input
+            type="number"
+            id="prestation-duree"
+            min="30"
+            step="30"
+            placeholder="Ex : 120"
+        >
+
+
+        <label for="prestation-prix">
+            Prix
+        </label>
+
+        <input
+            type="number"
+            id="prestation-prix"
+            min="0"
+            step="0.01"
+            placeholder="Ex : 50"
+        >
+
+
+        <label for="prestation-photo">
+            Photo
+        </label>
+
+        <input
+            type="file"
+            id="prestation-photo"
+            accept="image/jpeg,image/png,image/webp"
+        >
+
+        <p class="photo-info">
+            JPG, PNG ou WEBP.
+        </p>
+
+
+        <div class="form-buttons">
 
             <button
-                id="actualiser-reservations"
+                id="annuler-formulaire"
                 type="button"
             >
-                ACTUALISER
+                ANNULER
             </button>
-        </div>
 
-        <div class="table-container">
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Heure</th>
-                        <th>Cliente</th>
-                        <th>Téléphone</th>
-                        <th>Prestation</th>
-                        <th>Statut</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody id="reservations">
-
-                    <tr>
-                        <td colspan="7">
-                            Chargement...
-                        </td>
-                    </tr>
-
-                </tbody>
-
-            </table>
+            <button
+                id="sauvegarder-prestation"
+                type="button"
+            >
+                ENREGISTRER
+            </button>
 
         </div>
 
-    </section>
+        <p id="message-prestation"></p>
 
-</main>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js"></script>
-<script src="admin.js"></script>
+
+    <!-- LISTE -->
+
+    <div
+        id="liste-prestations"
+        class="liste-prestations"
+    >
+        Chargement...
+    </div>
+
+</section>
