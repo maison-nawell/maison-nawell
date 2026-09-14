@@ -1,4 +1,4 @@
-const ADMIN_EMAIL = "maisonnawell776@gmail.com";
+const ADMIN_EMAIL = "maisonnawell5@gmail.com";
 const reservationsTable = document.getElementById("reservations");
 const adminEmail = document.getElementById("admin-email");
 const deconnexion = document.getElementById("deconnexion");
