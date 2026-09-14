@@ -1,188 +1,286 @@
-<button id="deconnexion" type="button">
-    DÉCONNEXION
-</button>
-<section class="admin-welcome">
-    <h2>Tableau de bord</h2>
-    <p id="admin-email"></p>
-</section>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maison Nawell — Espace gérante</title>
 
-<!-- RENDEZ-VOUS -->
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<header class="admin-header">
 
-<section class="admin-section">
+    <div>
+        <h1>Maison Nawell</h1>
+        <p>Espace gérante</p>
+    </div>
 
-    <div class="section-title">
-        <div>
-            <h2>Rendez-vous</h2>
-            <p>Les réservations des clientes</p>
+    <button id="logout-button" class="logout-button">
+        SE DÉCONNECTER
+    </button>
+
+</header>
+
+
+<main class="admin-container">
+
+    <!-- MESSAGE GLOBAL -->
+    <div id="global-message" class="global-message hidden"></div>
+
+
+    <!-- ========================= -->
+    <!-- RÉSERVATIONS -->
+    <!-- ========================= -->
+
+    <section class="admin-section">
+
+        <div class="section-title">
+            <div>
+                <h2>Réservations</h2>
+                <p>Les rendez-vous pris par les clientes.</p>
+            </div>
+
+            <button id="refresh-reservations" class="secondary-button">
+                ACTUALISER
+            </button>
         </div>
 
-        <button
-            id="actualiser-reservations"
-            type="button"
-        >
-            ACTUALISER
-        </button>
-    </div>
-
-    <div class="table-container">
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Horaire</th>
-                    <th>Cliente</th>
-                    <th>Téléphone</th>
-                    <th>Prestation</th>
-                    <th>Statut</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-
-            <tbody id="reservations">
-                <tr>
-                    <td colspan="7">
-                        Chargement...
-                    </td>
-                </tr>
-            </tbody>
-
-        </table>
-
-    </div>
-
-</section>
-
-
-<!-- PRESTATIONS -->
-
-<section class="admin-section">
-
-    <div class="section-title">
-        <div>
-            <h2>Prestations</h2>
-            <p>Gérer les prestations affichées sur le site</p>
+        <div id="reservations-loading" class="loading">
+            Chargement des réservations...
         </div>
 
-        <button
-            id="nouvelle-prestation"
-            type="button"
-        >
-            + AJOUTER UNE PRESTATION
-        </button>
-    </div>
+        <div id="reservations-error" class="error-box hidden"></div>
+
+        <div id="reservations-empty" class="empty-box hidden">
+            Aucune réservation pour le moment.
+        </div>
+
+        <div class="table-wrapper">
+
+            <table id="reservations-table" class="admin-table hidden">
+
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Heure</th>
+                        <th>Cliente</th>
+                        <th>Téléphone</th>
+                        <th>Prestation</th>
+                        <th>Statut</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="reservations-body"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
 
 
-    <!-- FORMULAIRE -->
+    <!-- ========================= -->
+    <!-- PRESTATIONS -->
+    <!-- ========================= -->
 
-    <div
-        id="formulaire-prestation"
-        class="formulaire-prestation"
-        hidden
-    >
+    <section class="admin-section">
 
-        <h3 id="titre-formulaire">
-            Ajouter une prestation
-        </h3>
-
-        <input
-            type="hidden"
-            id="prestation-id"
-        >
-
-        <label for="prestation-nom">
-            Nom de la prestation
-        </label>
-
-        <input
-            type="text"
-            id="prestation-nom"
-            placeholder="Ex : Pose complète"
-        >
+        <div class="section-title">
+            <div>
+                <h2>Prestations</h2>
+                <p>Gérez les prestations proposées aux clientes.</p>
+            </div>
+        </div>
 
 
-        <label for="prestation-description">
-            Description
-        </label>
+        <!-- FORMULAIRE -->
+        <div class="form-card">
 
-        <textarea
-            id="prestation-description"
-            placeholder="Description de la prestation"
-        ></textarea>
+            <h3 id="prestation-form-title">
+                Ajouter une prestation
+            </h3>
 
+            <form id="prestation-form">
 
-        <label for="prestation-duree">
-            Durée en minutes
-        </label>
-
-        <input
-            type="number"
-            id="prestation-duree"
-            min="30"
-            step="30"
-            placeholder="Ex : 120"
-        >
+                <input
+                    type="hidden"
+                    id="prestation-id"
+                >
 
 
-        <label for="prestation-prix">
-            Prix
-        </label>
+                <div class="form-grid">
 
-        <input
-            type="number"
-            id="prestation-prix"
-            min="0"
-            step="0.01"
-            placeholder="Ex : 50"
-        >
+                    <div class="form-group">
 
+                        <label for="prestation-nom">
+                            Nom de la prestation
+                        </label>
 
-        <label for="prestation-photo">
-            Photo
-        </label>
+                        <input
+                            type="text"
+                            id="prestation-nom"
+                            placeholder="Ex : Pose gel"
+                            required
+                        >
 
-        <input
-            type="file"
-            id="prestation-photo"
-            accept="image/jpeg,image/png,image/webp"
-        >
-
-        <p class="photo-info">
-            JPG, PNG ou WEBP.
-        </p>
+                    </div>
 
 
-        <div class="form-buttons">
+                    <div class="form-group">
+
+                        <label for="prestation-prix">
+                            Prix (€)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="prestation-prix"
+                            min="0"
+                            step="0.01"
+                            placeholder="Ex : 45"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="prestation-duree">
+                            Durée (minutes)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="prestation-duree"
+                            min="1"
+                            step="1"
+                            placeholder="Ex : 90"
+                            required
+                            >
+
+                    </div>
+
+
+                    <div class="form-group full-width">
+
+                        <label for="prestation-description">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="prestation-description"
+                            rows="4"
+                            placeholder="Décrivez la prestation..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <div class="form-group full-width">
+
+                        <label for="prestation-photo">
+                            Photo de la prestation
+                        </label>
+
+                        <input
+                            type="file"
+                            id="prestation-photo"
+                            accept="image/jpeg,image/png,image/webp"
+                        >
+
+                        <small>
+                            JPG, PNG ou WEBP — 6 Mo maximum.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        id="save-prestation"
+                        class="primary-button"
+                    >
+                        AJOUTER LA PRESTATION
+                    </button>
+
+                    <button
+                        type="button"
+                        id="cancel-edit"
+                        class="secondary-button hidden"
+                    >
+                        ANNULER LA MODIFICATION
+                    </button>
+
+                </div>
+
+            </form>
+
+            <div id="prestation-message" class="form-message"></div>
+
+        </div>
+
+
+        <!-- LISTE -->
+        <div class="prestations-header">
+
+            <h3>
+                Prestations enregistrées
+            </h3>
 
             <button
-                id="annuler-formulaire"
-                type="button"
+                id="refresh-prestations"
+                class="secondary-button"
             >
-                ANNULER
-            </button>
-
-            <button
-                id="sauvegarder-prestation"
-                type="button"
-            >
-                ENREGISTRER
+                ACTUALISER
             </button>
 
         </div>
 
-        <p id="message-prestation"></p>
 
-    </div>
+        <div
+            id="prestations-loading"
+            class="loading"
+        >
+            Chargement des prestations...
+        </div>
 
 
-    <!-- LISTE -->
+        <div
+            id="prestations-error"
+            class="error-box hidden"
+        ></div>
 
-    <div
-        id="liste-prestations"
-        class="liste-prestations"
-    >
-        Chargement...
-    </div>
 
-</section>
+        <div
+            id="prestations-empty"
+            class="empty-box hidden"
+        >
+            Aucune prestation enregistrée.
+        </div>
+
+
+        <div
+            id="prestations-list"
+            class="prestations-grid"
+        ></div>
+
+    </section>
+
+</main>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+<script src="admin.js"></script>
+</body>
+</html>
