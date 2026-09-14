@@ -1,669 +1,482 @@
-const GERANTE_EMAIL = “maisonnawell5@gmail.com”;
-const form = document.getElementById(“prestation-form”);
-const prestationId = document.getElementById(“prestation-id”);
-const prestationNom = document.getElementById(“prestation-nom”);
-const prestationPrix = document.getElementById(“prestation-prix”);
-const prestationDuree = document.getElementById(“prestation-duree”);
-const prestationDescription = document.getElementById(“prestation-description”);
-const prestationPhoto = document.getElementById(“prestation-photo”);
-const saveButton = document.getElementById(“save-prestation”);
-const cancelEditButton = document.getElementById(“cancel-edit”);
-const prestationFormTitle =
-document.getElementById(“prestation-form-title”);
-const prestationMessage =
-document.getElementById(“prestation-message”);
-const prestationsList =
-document.getElementById(“prestations-list”);
-const prestationsLoading =
-document.getElementById(“prestations-loading”);
-const prestationsError =
-document.getElementById(“prestations-error”);
-const prestationsEmpty =
-document.getElementById(“prestations-empty”);
-const reservationsBody =
-document.getElementById(“reservations-body”);
-const reservationsTable =
-document.getElementById(“reservations-table”);
-const reservationsLoading =
-document.getElementById(“reservations-loading”);
-const reservationsError =
-document.getElementById(“reservations-error”);
-const reservationsEmpty =
-document.getElementById(“reservations-empty”);
-const globalMessage =
-document.getElementById(“global-message”);
-// =====================================================
-// INITIALISATION
-// =====================================================
-document.addEventListener(“DOMContentLoaded”, init);
-async function init() {
-try {
-
-    const {
-        data: {
-            user
-        },
-        error
-    } = await supabaseClient.auth.getUser();
-
-    if (error) {
-        throw error;
-    }
-
-    if (!user) {
-
-        window.location.href = "admin-login.html";
-        return;
-    }
-
-    if (
-        !user.email ||
-        user.email.toLowerCase() !== GERANTE_EMAIL
-    ) {
-
-        await supabaseClient.auth.signOut();
-
-        alert(
-            "Accès réservé à la gérante."
-        );
-
-        window.location.href = "admin-login.html";
-
-        return;
-    }
-
-    await Promise.all([
-        loadReservations(),
-        loadPrestations()
-    ]);
-
-} catch (error) {
-
-    console.error(
-        "Erreur initialisation :",
-        error
-    );
-
-    showGlobalError(
-        "Impossible de charger l'espace gérante : " +
-        getErrorMessage(error)
-    );
-}
-}
-// =====================================================
-// DÉCONNEXION
-// =====================================================
-document
-.getElementById(“logout-button”)
-.addEventListener(“click”, async () => {
-    await supabaseClient.auth.signOut();
-
+const GERANTE_EMAIL = "maisonnawell5@gmail.com";
+let prestationsCache = [];
+/* ========================= INITIALISATION ========================= */
+document.addEventListener("DOMContentLoaded", async () => { const { data: { session }, error } = await supabaseClient.auth.getSession();
+if (error || !session) {
     window.location.href = "admin-login.html";
+    return;
+}
+
+if (session.user.email !== GERANTE_EMAIL) {
+    await supabaseClient.auth.signOut();
+    window.location.href = "admin-login.html";
+    return;
+}
+
+await loadReservations();
+await loadPrestations();
+
+setupEvents();
 });
-// =====================================================
-// RÉSERVATIONS
-// =====================================================
+/* ========================= EVENEMENTS ========================= */
+function setupEvents() {
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+        await supabaseClient.auth.signOut();
+        window.location.href = "admin-login.html";
+    });
+}
+
+const refreshBtn = document.getElementById("refreshReservations");
+
+if (refreshBtn) {
+    refreshBtn.addEventListener("click", async () => {
+        await loadReservations();
+    });
+}
+
+const prestationForm = document.getElementById("prestationForm");
+
+if (prestationForm) {
+    prestationForm.addEventListener("submit", handlePrestationSubmit);
+}
+
+const cancelEditBtn = document.getElementById("cancelEdit");
+
+if (cancelEditBtn) {
+    cancelEditBtn.addEventListener("click", resetPrestationForm);
+}
+}
+/* ========================= RESERVATIONS ========================= */
 async function loadReservations() {
-reservationsLoading.classList.remove("hidden");
-reservationsError.classList.add("hidden");
-reservationsEmpty.classList.add("hidden");
-reservationsTable.classList.add("hidden");
+const loading = document.getElementById("reservationsLoading");
+const errorBox = document.getElementById("reservationsError");
+const empty = document.getElementById("reservationsEmpty");
+const tbody = document.getElementById("reservationsBody");
+
+if (loading) loading.style.display = "block";
+if (errorBox) {
+    errorBox.style.display = "none";
+    errorBox.textContent = "";
+}
+if (empty) empty.style.display = "none";
+if (tbody) tbody.innerHTML = "";
 
 try {
 
-    const {
-        data,
-        error
-    } = await supabaseClient
+    console.log("Chargement des réservations...");
+
+    const { data: reservations, error } = await supabaseClient
         .from("reservations")
-        .select(`
-            id,
-            nom_client,
-            telephone,
-            prestation_id,
-            date_reservation,
-            heure_reservation,
-            statut
-        `)
-        .order("date_reservation", {
-            ascending: true
-        })
-        .order("heure_reservation", {
-            ascending: true
-        });
+        .select("*")
+        .order("date_rdv", { ascending: true })
+        .order("heure_debut", { ascending: true });
+
+    console.log("Réservations :", reservations);
+    console.log("Erreur :", error);
 
     if (error) {
         throw error;
     }
 
-    const reservations = data || [];
-
-    reservationsLoading.classList.add("hidden");
-
-    if (reservations.length === 0) {
-
-        reservationsEmpty.classList.remove("hidden");
+    if (!reservations || reservations.length === 0) {
+        if (empty) empty.style.display = "block";
         return;
     }
 
-    reservationsBody.innerHTML = "";
+    /* Charger les prestations */
 
-    /*
-     * On récupère les prestations séparément.
-     * Cela évite de dépendre d'une relation PostgREST
-    * qui pourrait ne pas être configurée.
-     */
-    const {
-        data: prestations,
-        error: prestationsError
-    } = await supabaseClient
-        .from("prestations")
-        .select("id, nom");
+    const { data: prestations, error: prestationsError } =
+        await supabaseClient
+            .from("prestations")
+            .select("id, nom");
 
     if (prestationsError) {
         console.warn(
-            "Impossible de charger les noms de prestations :",
+            "Impossible de charger les prestations :",
             prestationsError
         );
     }
 
     const prestationsMap = {};
 
-    (prestations || []).forEach((p) => {
-        prestationsMap[p.id] = p.nom;
-    });
+    if (prestations) {
+        prestations.forEach(prestation => {
+            prestationsMap[prestation.id] = prestation.nom;
+        });
+    }
 
+    /* Affichage */
 
-    reservations.forEach((reservation) => {
+    reservations.forEach(reservation => {
 
-        const row = document.createElement("tr");
+        const tr = document.createElement("tr");
 
-        const date = formatDate(
-            reservation.date_reservation
-        );
+        const prestationNom =
+            prestationsMap[reservation.prestation_id] ||
+            "Prestation supprimée";
 
-        const heure =
-            reservation.heure_reservation
-                ? reservation.heure_reservation.slice(0, 5)
-                : "-";
+        const statut =
+            reservation.statu || "en_attente";
 
-        const prestation =
-            prestationsMap[reservation.prestation_id]
-            || "Prestation supprimée";
-
-
-        row.innerHTML = `
-            <td>${escapeHtml(date)}</td>
-
-            <td>${escapeHtml(heure)}</td>
+        tr.innerHTML = `
+            <td>${formatDate(reservation.date_rdv)}</td>
 
             <td>
-                <strong>
-                    ${escapeHtml(reservation.nom_client || "-")}
-                </strong>
-            </td>
-
-            <td>
-                ${escapeHtml(reservation.telephone || "-")}
-            </td>
-
-            <td>
-                ${escapeHtml(prestation)}
-            </td>
-
-            <td>
-                <span class="status ${escapeHtml(
-                    reservation.statut || ""
-                )}">
-                    ${escapeHtml(
-                        formatStatus(reservation.statut)
-                    )}
-                </span>
-            </td>
-
-            <td>
+                ${formatTime(reservation.heure_debut)}
                 ${
-                    reservation.statut !== "annule"
-                    ?
-                    `<button
-                        class="danger-button"
-                        data-cancel-id="${reservation.id}"
-                    >
-                        ANNULER
-                    </button>`
-                    :
-                    "-"
+                    reservation.heure_fin
+                        ? " - " + formatTime(reservation.heure_fin)
+                        : ""
                 }
+            </td>
+
+            <td>
+                ${escapeHtml(reservation.nom || "")}
+            </td>
+
+            <td>
+                ${escapeHtml(reservation.telephone || "")}
+            </td>
+
+            <td>
+                ${escapeHtml(prestationNom)}
+            </td>
+
+            <td>
+                <span class="status ${getStatusClass(statut)}">
+                    ${formatStatus(statut)}
+                    </span>
+            </td>
+
+            <td>
+                <div class="reservation-actions">
+
+                    ${
+                        statut === "en_attente"
+                            ? `
+                                <button
+                                    class="btn-confirm"
+                                    onclick="updateReservationStatus(${reservation.id}, 'confirmee')"
+                                >
+                                    Confirmer
+                                </button>
+                            `
+                            : ""
+                    }
+
+                    ${
+                        statut !== "annulee"
+                            ? `
+                                <button
+                                    class="btn-cancel"
+                                    onclick="updateReservationStatus(${reservation.id}, 'annulee')"
+                                >
+                                    Annuler
+                                </button>
+                            `
+                            : ""
+                    }
+
+                    <button
+                        class="btn-delete"
+                        onclick="deleteReservation(${reservation.id})"
+                    >
+                        Supprimer
+                    </button>
+
+                </div>
             </td>
         `;
 
-        reservationsBody.appendChild(row);
+        if (tbody) {
+            tbody.appendChild(tr);
+        }
     });
-
-
-    reservationsTable.classList.remove("hidden");
-
-    document
-        .querySelectorAll("[data-cancel-id]")
-        .forEach((button) => {
-
-            button.addEventListener(
-                "click",
-                async () => {
-
-                    const id =
-                        button.dataset.cancelId;
-
-                    await cancelReservation(id);
-                }
-            );
-        });
 
 } catch (error) {
 
-    reservationsLoading.classList.add("hidden");
+    console.error("Erreur réservations :", error);
 
-    reservationsError.classList.remove("hidden");
+    if (errorBox) {
+        errorBox.textContent =
+            "Impossible de charger les réservations : " +
+            (error.message || error);
 
-    reservationsError.textContent =
-        "Erreur lors du chargement des réservations : " +
-        getErrorMessage(error);
+        errorBox.style.display = "block";
+    }
 
-    console.error(
-        "Erreur réservations :",
-        error
-    );
+} finally {
+
+    if (loading) {
+        loading.style.display = "none";
+    }
 }
 }
-// =====================================================
-// ANNULER UNE RÉSERVATION
-// =====================================================
-async function cancelReservation(id) {
+/* ========================= STATUT RESERVATION ========================= */
+async function updateReservationStatus(id, newStatus) {
 const confirmation = confirm(
-    "Voulez-vous vraiment annuler cette réservation ?"
+    newStatus === "confirmee"
+        ? "Confirmer cette réservation ?"
+        : "Annuler cette réservation ?"
 );
 
 if (!confirmation) {
     return;
 }
 
-try {
+const { error } = await supabaseClient
+    .from("reservations")
+    .update({
+        statu: newStatus
+    })
+    .eq("id", id);
 
-    const {
-        error
-    } = await supabaseClient
-        .from("reservations")
-        .update({
-            statut: "annule"
-        })
-        .eq("id", id);
-
-    if (error) {
-        throw error;
-    }
-
-    showGlobalSuccess(
-        "Réservation annulée."
-    );
-
-    await loadReservations();
-
-} catch (error) {
-
-    showGlobalError(
-        "Impossible d'annuler la réservation : " +
-        getErrorMessage(error)
-    );
+if (error) {
+    alert("Erreur : " + error.message);
+    console.error(error);
+    return;
 }
+
+await loadReservations();
 }
-// =====================================================
-// PRESTATIONS
-// =====================================================
+async function deleteReservation(id) {
+if (!confirm("Supprimer définitivement cette réservation ?")) {
+    return;
+}
+
+const { error } = await supabaseClient
+    .from("reservations")
+    .delete()
+    .eq("id", id);
+
+if (error) {
+    alert("Erreur : " + error.message);
+    console.error(error);
+    return;
+}
+
+await loadReservations();
+}
+/* ========================= PRESTATIONS ========================= */
 async function loadPrestations() {
-prestationsLoading.classList.remove("hidden");
-prestationsError.classList.add("hidden");
-prestationsEmpty.classList.add("hidden");
+const list = document.getElementById("prestationsList");
 
-prestationsList.innerHTML = "";
+if (list) {
+    list.innerHTML = "<p>Chargement des prestations...</p>";
+}
 
 try {
 
-    const {
-        data,
-        error
-    } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from("prestations")
         .select("*")
-        .
-        order("id", {
-            ascending: true
-        });
+        .order("id", { ascending: true });
 
     if (error) {
         throw error;
     }
 
-    const prestations = data || [];
+    prestationsCache = data || [];
 
-    prestationsLoading.classList.add("hidden");
-
-    if (prestations.length === 0) {
-
-        prestationsEmpty.classList.remove("hidden");
+    if (!list) {
         return;
     }
 
-    for (const prestation of prestations) {
-
-        const card =
-            await createPrestationCard(
-                prestation
-            );
-
-        prestationsList.appendChild(card);
+    if (prestationsCache.length === 0) {
+        list.innerHTML = "<p>Aucune prestation pour le moment.</p>";
+        return;
     }
 
-} catch (error) {
+    list.innerHTML = "";
 
-    prestationsLoading.classList.add("hidden");
+    for (const prestation of prestationsCache) {
 
-    prestationsError.classList.remove("hidden");
+        const card = document.createElement("div");
 
-    prestationsError.textContent =
-        "Erreur lors du chargement des prestations : " +
-        getErrorMessage(error);
+        card.className = "prestation-card";
 
-    console.error(
-        "Erreur prestations :",
-        error
-    );
-}
-}
-// =====================================================
-// CARTE PRESTATION
-// =====================================================
-async function createPrestationCard(prestation) {
-const card =
-    document.createElement("article");
+        let photoUrl = "";
 
-card.className = "prestation-card";
+        try {
 
-let photoUrl = null;
+            const { data: photos } = await supabaseClient
+                .from("photos_prestations")
+                .select("image_url")
+                .eq("prestation_id", prestation.id)
+                .eq("actif", true)
+                .order("id", { ascending: true })
+                .limit(1);
 
-try {
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("photos_prestations")
-        .select("image_url")
-        .eq("prestation_id", prestation.id)
-        .eq("actif", true)
-        .limit(1)
-        .maybeSingle();
-
-    if (!error && data) {
-        photoUrl = data.image_url;
-    }
-
-} catch (error) {
-
-    console.warn(
-        "Photo indisponible :",
-        error
-    );
-}
-
-
-const imageHtml = photoUrl
-    ?
-    `<img
-        src="${escapeHtml(photoUrl)}"
-        alt="${escapeHtml(prestation.nom)}"
-        class="prestation-image"
-    >`
-    :
-    `<div class="no-image">
-        Aucune photo
-    </div>`;
-
-
-card.innerHTML = `
-
-    ${imageHtml}
-
-    <div class="prestation-content">
-
-        <h4>
-            ${escapeHtml(prestation.nom)}
-        </h4>
-
-        <p class="prestation-description">
-            ${
-                escapeHtml(
-                    prestation.description ||
-                    "Aucune description."
-                )
+            if (photos && photos.length > 0) {
+                photoUrl = photos[0].image_url;
             }
-        </p>
 
-        <div class="prestation-meta">
+        } catch (photoError) {
+            console.warn("Erreur photo :", photoError);
+            }
 
-            <span>
-                ${Number(prestation.prix || 0).toFixed(2)} €
-            </span>
+        card.innerHTML = `
 
-            <span>
-                ${prestation.duree || 0} min
-            </span>
+            ${
+                photoUrl
+                    ? `
+                        <img
+                            src="${escapeAttribute(photoUrl)}"
+                            alt="${escapeAttribute(prestation.nom)}"
+                            class="prestation-image"
+                        >
+                    `
+                    : `
+                        <div class="prestation-image placeholder">
+                            Aucune photo
+                        </div>
+                    `
+            }
 
-        </div>
+            <div class="prestation-content">
 
-        <div class="prestation-meta">
+                <h3>
+                    ${escapeHtml(prestation.nom || "")}
+                </h3>
 
-            <span>
-                ${
-                    prestation.actif
-                    ? "Visible"
-                    : "Masquée"
-                }
-            </span>
+                <p>
+                    ${escapeHtml(prestation.description || "")}
+                </p>
 
-        </div>
+                <div class="prestation-info">
+                    <strong>
+                        ${prestation.prix ?? 0} €
+                    </strong>
 
-        <div class="prestation-actions">
+                    <span>
+                        ${prestation.duree ?? 0} min
+                    </span>
+                </div>
 
-            <button
-                class="secondary-button"
-                data-edit-id="${prestation.id}"
-            >
-                MODIFIER
-            </button>
+                <div class="prestation-status">
+                    ${
+                        prestation.actif
+                            ? "Visible sur le site"
+                            : "Masquée du site"
+                    }
+                </div>
 
-            <button
-                class="secondary-button"
-                data-toggle-id="${prestation.id}"
-            >
-                ${
-                    prestation.actif
-                    ? "MASQUER"
-                    : "ACTIVER"
-                }
-            </button>
+                <div class="prestation-actions">
 
-            <button
-                class="danger-button"
-                data-delete-id="${prestation.id}"
-            >
-                SUPPRIMER
-            </button>
+                    <button
+                        onclick="editPrestation(${prestation.id})"
+                    >
+                        Modifier
+                    </button>
 
-        </div>
+                    <button
+                        onclick="togglePrestation(${prestation.id}, ${!prestation.actif})"
+                    >
+                        ${
+                            prestation.actif
+                                ? "Masquer"
+                                : "Afficher"
+                        }
+                    </button>
 
-    </div>
-`;
+                    <button
+                        class="btn-delete"
+                        onclick="deletePrestation(${prestation.id})"
+                    >
+                        Supprimer
+                    </button>
 
+                </div>
 
-const editButton =
-    card.querySelector(
-        `[data-edit-id="${prestation.id}"]`
-    );
+            </div>
+        `;
 
-editButton.addEventListener(
-    "click",
-    () => startEdit(prestation)
-);
+        list.appendChild(card);
+    }
 
+} catch (error) {
 
-const toggleButton =
-    card.querySelector(
-        [data-toggle-id="${prestation.id}"]
-    );
+    console.error("Erreur prestations :", error);
 
-toggleButton.addEventListener(
-    "click",
-    () => togglePrestation(prestation)
-);
-
-
-const deleteButton =
-    card.querySelector(
-        [data-delete-id="${prestation.id}"]
-    );
-
-deleteButton.addEventListener(
-    "click",
-    () => deletePrestation(prestation)
-);
-
-
-return card;
+    if (list) {
+        list.innerHTML = `
+            <p class="error">
+                Impossible de charger les prestations :
+                ${escapeHtml(error.message || String(error))}
+            </p>
+        `;
+    }
 }
-// =====================================================
-// AJOUT / MODIFICATION
-// =====================================================
-form.addEventListener(
-“submit”,
-savePrestation
-);
-async function savePrestation(event) {
-    event.preventDefault();
+}
+/* ========================= AJOUT / MODIFICATION ========================= */
+async function handlePrestationSubmit(event) {
+event.preventDefault();
 
-prestationMessage.textContent = "";
+const form = event.target;
 
-const id =
-    prestationId.value.trim();
+const id = document.getElementById("prestationId")?.value || "";
 
-const nom =
-    prestationNom.value.trim();
-
-const description =
-    prestationDescription.value.trim();
+const nom = document.getElementById("prestationNom")?.value.trim() || "";
 
 const prix =
-    Number(prestationPrix.value);
+    parseFloat(
+        document.getElementById("prestationPrix")?.value
+    ) || 0;
 
 const duree =
-    Number(prestationDuree.value);
+    parseInt(
+        document.getElementById("prestationDuree")?.value
+    ) || 0;
 
-const photo =
-    prestationPhoto.files[0];
+const description =
+    document.getElementById("prestationDescription")?.value.trim() || "";
 
+const photoInput =
+    document.getElementById("prestationPhoto");
 
 if (!nom) {
-    showPrestationMessage(
-        "Le nom est obligatoire.",
-        true
-    );
+    alert("Veuillez entrer le nom de la prestation.");
     return;
 }
-
-if (!Number.isFinite(prix) || prix < 0) {
-    showPrestationMessage(
-        "Le prix est invalide.",
-        true
-    );
-    return;
-}
-
-if (!Number.isInteger(duree) || duree <= 0) {
-    showPrestationMessage(
-        "La durée est invalide.",
-        true
-    );
-    return;
-}
-
-
-if (photo && photo.size > 6 * 1024 * 1024) {
-
-    showPrestationMessage(
-        "La photo doit faire 6 Mo maximum.",
-        true
-    );
-
-    return;
-}
-
-
-saveButton.disabled = true;
-
-saveButton.textContent =
-    id
-    ? "MODIFICATION..."
-    : "AJOUT...";
-
 
 try {
 
-    let prestation;
+    let prestationId = id;
 
-
-    // =============================================
-    // MODIFICATION
-    // =============================================
+    /* MODIFICATION */
 
     if (id) {
 
-        const {
-            data,
-            error
-        } = await supabaseClient
+        const { error } = await supabaseClient
             .from("prestations")
             .update({
                 nom,
-                description,
                 prix,
-                duree
+                duree,
+                description
             })
-            .eq("id", id)
-            .select()
-            .single();
+            .eq("id", id);
 
         if (error) {
             throw error;
         }
 
-        prestation = data;
+    }
 
+    /* AJOUT */
 
-    // =============================================
-    // AJOUT
-    // =============================================
+    else {
 
-    } else {
-
-        const {
-            data,
-            error
-        } = await supabaseClient
+        const { data, error } = await supabaseClient
             .from("prestations")
             .insert({
                 nom,
-                description,
                 prix,
                 duree,
+                description,
                 actif: true
             })
             .select()
@@ -672,417 +485,246 @@ try {
         if (error) {
             throw error;
         }
-
-        prestation = data;
+        prestationId = data.id;
     }
 
+    /* PHOTO */
 
-    // =============================================
-    // PHOTO
-    // =============================================
+    if (
+        photoInput &&
+        photoInput.files &&
+        photoInput.files.length > 0
+    ) {
 
-    if (photo) {
+        const file = photoInput.files[0];
 
         const extension =
-            getExtension(photo.name);
+            file.name.split(".").pop().toLowerCase();
 
-        const safeName =
-            slugify(nom);
+        const fileName =
+            `${prestationId}-${Date.now()}.${extension}`;
 
-        const uniqueName =
-            async () => {
-    await supabaseClient.au
+        const filePath = fileName;
 
-        const path =
-            prestations/${prestation.id}/${uniqueName};
-
-
-        const {
-            error: uploadError
-        } = await supabaseClient
-            .storage
-            .from("prestations")
-            .upload(
-                path,
-                photo,
-                {
+        const { error: uploadError } =
+            await supabaseClient.storage
+                .from("prestations")
+                .upload(filePath, file, {
                     cacheControl: "3600",
-                    upsert: false,
-                    contentType: photo.type
-                }
-            );
-
+                    upsert: false
+                });
 
         if (uploadError) {
             throw uploadError;
         }
 
-
         const {
-            data: publicData
-        } = supabaseClient
-            .storage
+            data: publicUrlData
+        } = supabaseClient.storage
             .from("prestations")
-            .getPublicUrl(path);
-
+            .getPublicUrl(filePath);
 
         const imageUrl =
-            publicData.publicUrl;
+            publicUrlData.publicUrl;
 
-
-        /*
-         * Pour une modification, on désactive
-         * les anciennes photos de cette prestation.
-         */
-        if (id) {
-
-            const {
-                error: oldPhotoError
-            } = await supabaseClient
+        const { error: photoDbError } =
+            await supabaseClient
                 .from("photos_prestations")
-                .update({
-                    actif: false
-                })
-                .eq("prestation_id", prestation.id);
+                .insert({
+                    prestation_id: prestationId,
+                    nom: file.name,
+                    image_path: filePath,
+                    image_url: imageUrl,
+                    actif: true
+                });
 
-            if (oldPhotoError) {
-                console.warn(
-                    "Anciennes photos :",
-                    oldPhotoError
-                );
-            }
-        }
-
-
-        const {
-            error: photoInsertError
-        } = await supabaseClient
-            .from("photos_prestations")
-            .insert({
-                prestation_id: prestation.id,
-                nom: photo.name,
-                image_path: path,
-                image_url: imageUrl,
-                actif: true
-            });
-
-
-        if (photoInsertError) {
-            throw photoInsertError;
+        if (photoDbError) {
+            throw photoDbError;
         }
     }
 
-
-    showPrestationMessage(
+    alert(
         id
             ? "Prestation modifiée avec succès."
-            : "Prestation ajoutée avec succès.",
-        false
+            : "Prestation ajoutée avec succès."
     );
-
 
     resetPrestationForm();
 
     await loadPrestations();
 
-
 } catch (error) {
 
-    console.error(
-        "Erreur prestation :",
-        error
+    console.error("Erreur prestation :", error);
+
+    alert(
+        "Impossible d'enregistrer la prestation :\n\n" +
+        (error.message || error)
     );
-
-    showPrestationMessage(
-        getErrorMessage(error),
-        true
-    );
-
-} finally {
-
-    saveButton.disabled = false;
-
-    saveButton.textContent =
-        prestationId.value
-        ? "MODIFIER LA PRESTATION"
-        : "AJOUTER LA PRESTATION";
 }
 }
-// =====================================================
-// MODIFICATION
-// =====================================================
-function startEdit(prestation) {
-prestationId.value =
-    prestation.id;
+/* ========================= MODIFIER ========================= */
+function editPrestation(id) {
+const prestation =
+    prestationsCache.find(
+        p => String(p.id) === String(id)
+    );
 
-prestationNom.value =
-    prestation.nom || "";
+if (!prestation) {
+    return;
+}
 
-prestationPrix.value =
-    prestation.prix || "";
+const idInput =
+    document.getElementById("prestationId");
 
-prestationDuree.value =
-    prestation.duree || "";
+const nomInput =
+    document.getElementById("prestationNom");
 
-prestationDescription.value =
-    prestation.description || "";
+const prixInput =
+    document.getElementById("prestationPrix");
 
-prestationPhoto.value = "";
+const dureeInput =
+    document.getElementById("prestationDuree");
 
-prestationFormTitle.textContent =
-    "Modifier la prestation";
+const descriptionInput =
+    document.getElementById("prestationDescription");
 
-saveButton.textContent =
-    "MODIFIER LA PRESTATION";
+const submitBtn =
+    document.querySelector(
+        '#prestationForm button[type="submit"]'
+    );
 
-cancelEditButton.classList.remove(
-    "hidden"
-);
+if (idInput) idInput.value = prestation.id;
+if (nomInput) nomInput.value = prestation.nom || "";
+if (prixInput) prixInput.value = prestation.prix ?? "";
+if (dureeInput) dureeInput.value = prestation.duree ?? "";
+if (descriptionInput) {
+    descriptionInput.value =
+        prestation.description || "";
+}
+
+if (submitBtn) {
+    submitBtn.textContent = "Modifier la prestation";
+}
 
 window.scrollTo({
     top: 0,
     behavior: "smooth"
 });
 }
-// =====================================================
-// ANNULER MODIFICATION
-// =====================================================
-cancelEditButton.addEventListener(
-“click”,
-resetPrestationForm
-);
+/* ========================= RESET FORMULAIRE ========================= */
 function resetPrestationForm() {
-form.reset();
+const form =
+    document.getElementById("prestationForm");
 
-prestationId.value = "";
-
-prestationFormTitle.textContent =
-    "Ajouter une prestation";
-
-saveButton.textContent =
-    "AJOUTER LA PRESTATION";
-
-cancelEditButton.classList.add(
-    "hidden"
-);
-
-prestationMessage.textContent = "";
+if (form) {
+    form.reset();
 }
-// =====================================================
-// ACTIVER / MASQUER
-// =====================================================
-async function togglePrestation(prestation) {
-try {
 
-    const {
-        error
-    } = await supabaseClient
-        .from("prestations")
-        .update({
-            actif: !prestation.actif
-        })
-        .eq("id", prestation.id);
+const idInput =
+    document.getElementById("prestationId");
 
-    if (error) {
-        throw error;
-    }
+if (idInput) {
+    idInput.value = "";
+}
 
-    await loadPrestations();
-
-} catch (error) {
-
-    showGlobalError(
-        "Impossible de modifier la visibilité : " +
-        getErrorMessage(error)
+const submitBtn =
+    document.querySelector(
+        '#prestationForm button[type="submit"]'
     );
-}
-}
-// =====================================================
-// SUPPRIMER
-// =====================================================
-async function deletePrestation(prestation) {
-const confirmation = confirm(
-   lient
-        .from("prestations")
-        .select);
 
-if (!confirmation) {
+if (submitBtn) {
+    submitBtn.textContent = "Ajouter la prestation";
+}
+}
+/* ========================= AFFICHER / MASQUER ========================= */
+async function togglePrestation(id, actif) {
+const { error } = await supabaseClient
+    .from("prestations")
+    .update({
+        actif
+    })
+    .eq("id", id);
+
+if (error) {
+    alert("Erreur : " + error.message);
+    console.error(error);
     return;
 }
 
-
-try {
-
-    /*
-     * Les photos liées seront supprimées de la table
-     * photos_prestations grâce à ON DELETE CASCADE.
-     */
-
-    const {
-        error
-    } = await supabaseClient
-        .from("prestations")
-        .delete()
-        .eq("id", prestation.id);
-
-    if (error) {
-        throw error;
-    }
-
-    showGlobalSuccess(
-        "Prestation supprimée."
-    );
-
-    await loadPrestations();
-
-} catch (error) {
-
-    showGlobalError(
-        "Impossible de supprimer la prestation : " +
-        getErrorMessage(error)
-    );
+await loadPrestations();
 }
-}
-// =====================================================
-// ACTUALISATION
-// =====================================================
-document
-.getElementById(“refresh-reservations”)
-.addEventListener(
-“click”,
-loadReservations
-);
-document
-.getElementById(“refresh-prestations”)
-.addEventListener(
-“click”,
-loadPrestations
-);
-// =====================================================
-// MESSAGES
-// =====================================================
-function showPrestationMessage(
-text,
-isError
+/* ========================= SUPPRIMER PRESTATION ========================= */
+async function deletePrestation(id) {
+if (
+    !confirm(
+        "Supprimer cette prestation ?\n\nCette action est définitive."
+    )
 ) {
-prestationMessage.textContent =
-    text;
-
-prestationMessage.style.color =
-    isError
-    ? "#9b2c2c"
-    : "#31613a";
-}
-function showGlobalError(text) {
-globalMessage.textContent =
-    text;
-
-globalMessage.style.background =
-    "#fff0f0";
-
-globalMessage.style.color =
-    "#9b2c2c";
-
-globalMessage.classList.remove(
-    "hidden"
-);
-}
-function showGlobalSuccess(text) {
-globalMessage.textContent =
-    text;
-
-globalMessage.style.background =
-    "#e9f3e9";
-
-globalMessage.style.color =
-    "#31613a";
-
-globalMessage.classList.remove(
-    "hidden"
-);
-
-setTimeout(() => {
-
-    globalMessage.classList.add(
-        "hidden"
-    );
-
-}, 4000);
-}
-// =====================================================
-// OUTILS
-// =====================================================
-function getErrorMessage(error) {
-if (!error) {
-    return "Erreur inconnue.";
+    return;
 }
 
-return (
-    error.message ||
-    error.details ||
-    error.hint ||
-    "Erreur inconnue."
-);
-}
-function formatDate(dateString) {
-if (!dateString) {
-    return "-";
-}
+const { error } = await supabaseClient
+    .from("prestations")
+    .delete()
+    .eq("id", id);
 
-const parts =
-    dateString.split("-");
-
-if (parts.length !== 3) {
-    return dateString;
+if (error) {
+    alert("Erreur : " + error.message);
+    console.error(error);
+    return;
 }
 
-return   window.location.href = "admin-login.
+await loadPrestations();
+}
+/* ========================= FORMATAGE ========================= */
+function formatDate(date) {
+if (!date) {
+    return "";
+}
+
+const parts = date.split("-");
+
+if (parts.length === 3) {
+    return       <span class="status ${getStatusC
+}
+
+return date;
+}
+function formatTime(time) {
+if (!time) {
+    return "";
+}
+
+return String(time).slice(0, 5);
 }
 function formatStatus(status) {
-const labels = {
-    confirmee: "Confirmée",
+const statuses = {
     en_attente: "En attente",
-    annule: "Annulée"
+    confirmee: "Confirmée",
+    annulee: "Annulée"
 };
 
-return labels[status]  status  "-";
+return statuses[status] || status;
 }
+function getStatusClass(status) {
+if (status === "confirmee") {
+    return "confirmed";
+}
+
+if (status === "annulee") {
+    return "cancelled";
+}
+
+return "pending";
+}
+/* ========================= SECURITE AFFICHAGE ========================= */
 function escapeHtml(value) {
-return String(value ?? "")
+return String(value)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 }
-function slugify(value) {
-return String(value)
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .substring(0, 60);
-}
-function getExtension(filename) {
-const parts =
-    filename.split(".");
-
-if (parts.length < 2) {
-    return "jpg";
-}
-
-const extension =
-    parts.pop().toLowerCase();
-
-const allowed = [
-    "jpg",
-    "jpeg",
-    "png",
-    "webp"
-];
-
-return allowed.includes(extension)
-    ? extension
-    : "jpg";
-}
+function escapeAttribute(value) { return escapeHtml(value); }
